@@ -14,7 +14,7 @@ and use`Start-PSBootstrap` to install the dependencies.
 
 The `Start-PSBootstrap` function does the following:
 
-- Uses `brew` to install CMake, OpenSSL, and GNU WGet
+- Uses `brew` to install CMake
 - Uninstalls any prior versions of .NET CLI
 - Downloads and installs a preview version of .NET Core SDK 2.0 to `~/.dotnet`
 

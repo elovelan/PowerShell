@@ -1273,16 +1273,10 @@ function Start-PSBootstrap {
 
                 # Build tools
                 $Deps += "cmake"
-
-                # .NET Core required runtime libraries
-                $Deps += "openssl"
-
+                
                 # Install dependencies
                 # ignore exitcode, because they may be already installed
                 Start-NativeExecution { brew install $Deps } -IgnoreExitcode
-
-                # Install patched version of curl
-                Start-NativeExecution { brew install curl --with-openssl } -IgnoreExitcode
             }
 
             # Install [fpm](https://github.com/jordansissel/fpm) and [ronn](https://github.com/rtomayko/ronn)

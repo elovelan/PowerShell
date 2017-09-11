@@ -406,50 +406,6 @@ and remove the desired the paths with `sudo rm`.
 
 [paths]:#paths
 
-### OpenSSL on macOS
-
-On macOS, .NET Core requires Homebrew's OpenSSL
-because the "OpenSSL" system libraries on macOS are not OpenSSL,
-as Apple deprecated OpenSSL in favor of their own libraries.
-This requirement is not a hard requirement for all of PowerShell.
-However, most networking functions (such as `Invoke-WebRequest`)
-do require OpenSSL to work properly.
-
-The PowerShell formula for Homebrew includes this OpenSSL as a dependency,
-so you if you installed via Homebrew, you shouldn't run into these problems.
-
-If you installed via direct download (or through some means other than Homebrew),
-the easiest fix for these issues is to install [Homebrew's OpenSSL][openssl]:
-
-```bash
-brew install openssl
-brew install curl --with-openssl
-```
-
-**Please ignore** .NET Core's installation instructions to manually link the OpenSSL libraries.
-This is **not** required for PowerShell as we patch .NET Core's cryptography libraries to find Homebrew's OpenSSL in its installed location.
-Again, **do not** run `brew link --force` nor `ln -s` for OpenSSL, regardless of other instructions.
-
-Homebrew previously allowed OpenSSL libraries to be linked to the system library location;
-however, this created major security holes and is [no longer allowed][homebrew-patch].
-Because .NET Core's 1.0.0 release libraries still look in the prior system location for OpenSSL,
-they will fail to work unless the libraries are manually placed there (security risk),
-or their libraries are patched (which we do).
-To patch .NET Core's cryptography libraries, we use `install_name_tool`:
-
-```bash
-find ~/.nuget -name System.Security.Cryptography.Native.dylib | xargs sudo install_name_tool -add_rpath /usr/local/opt/openssl/lib
-find ~/.nuget -name System.Net.Http.Native.dylib | xargs sudo install_name_tool -change /usr/lib/libcurl.4.dylib /usr/local/opt/curl/lib/libcurl.4.dylib
-```
-
-This updates .NET Core's library to look in Homebrew's OpenSSL installation location instead of the system library location.
-The PowerShell macOS package come with the necessary libraries patched,
-and the build script patches the libraries on-the-fly when building from source.
-You *can* run this command manually if you're having trouble with .NET Core's cryptography libraries.
-
-[openssl]: https://github.com/Homebrew/homebrew-core/blob/master/Formula/openssl.rb
-[homebrew-patch]: https://github.com/Homebrew/brew/pull/597
-
 ## Kali
 
 ### Installation
